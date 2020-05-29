@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\ChequeFormRequest;
 use Illuminate\Support\Facades\Input;
 use DB;
+use Barryvdh\DomPDF\Facade as PDF;
 
 
 class ChequeController extends Controller
@@ -85,9 +86,27 @@ class ChequeController extends Controller
       }
     
       public function destroy($id){
-        $cheque = Cheque::findOrFail($id);
+        $cheque = Cheque::findOrFail($id); 
         $cheque->condicion ='0';
         $cheque->update();
         return Redirect::to('cheque/');
-      } 
+      }
+      
+      public function print(Request $request, $id){
+        // $contrato = Contratos::find($id);
+    
+        $cheque=DB::table('cheques as che')
+        ->join('proveedores as p', 'che.idproveedor','=','p.id')
+        ->join('chequeras as ch', 'che.idchequera','=','che.id')
+        ->join('cuentas as c', 'ch.idcuenta','=','c.id')
+        ->join('bancos as b', 'c.idbanco','=','b.id')
+        ->select('che.id','che.no_cheque','che.monto','che.monto_letras','che.lugar','che.fecha','che.condicion',DB::raw("ch.chequera as chequera"),DB::raw("p.nombre as proveedor"),
+                  DB::raw("c.no_cuenta as cuenta"),DB::raw("b.nombre as banco"))
+        ->where('che.id','=',$id)->first();
+
+        $customPaper = array(0,0,467.00,483.80);
+    
+        $pdf = PDF::loadView('cheque.print', compact('cheque'))->setPaper($customPaper, 'landscape')->setWarnings(false)->save('cheque.pdf');
+        return $pdf->stream('cheque.pdf');
+      }
 }

@@ -35,6 +35,12 @@
 							<a href="{{URL::action('ChequeController@show', $che->id)}}">
 								<button class="btn btn-sm btn-warning fa fa-eye" title="Ver Datos" ></button>
 							</a>
+
+							@if($che->condicion == 1)
+								<a href="{{URL::action('ChequeController@print',$che->id)}}">
+									<button class="btn btn-sm btn-primary fa fa-print" title="imprimir" ></button>
+								</a>
+							@endif
 						</td>
 						<td>{{$che->lugar.' '.$che->fecha}}</td>
 						<td>{{$che->chequera}}</td>

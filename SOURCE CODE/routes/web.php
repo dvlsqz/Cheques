@@ -35,5 +35,6 @@ Route::resource('chequera','ChequeraController');
 
 //Ruta del modulo de Cheques
 Route::resource('cheque','ChequeController');
+Route::get('views/cheque/{id}', 'ChequeController@print');
 
 
